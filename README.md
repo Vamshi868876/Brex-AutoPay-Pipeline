@@ -3,8 +3,9 @@
   <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <br>
-  <h1>🚀 Next-Gen Accounts Payable Engine</h1>
+  <h1>🚀 Brex AutoPay Pipeline (Email-to-Paid Engine)</h1>
   <p><b>An Autonomous, AI-Driven Financial Pipeline for Zero-Touch Invoice Processing</b></p>
+  <p><i>Developed by <b>Vamshi Batthula</b> (<a href="mailto:batthulavamshi740@gmail.com">batthulavamshi740@gmail.com</a>)</i></p>
 </div>
 
 ---
@@ -29,33 +30,40 @@ flowchart TD
     classDef brex fill:#FBE9E7,stroke:#FF5722,stroke-width:2px,color:#BF360C
     classDef secure fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px,color:#1B5E20
     
-    subgraph Phase 1: Ingestion
+    subgraph Phase_1 [Phase 1: Ingestion]
         A([📧 Vendors Email Invoice]):::email --> B{IMAP Listener}:::email
         B -->|Downloads| C[(Raw PDFs)]:::email
     end
 
-    subgraph Phase 2: AI Extraction
-        C --> D[PyMuPDF Text Extractor]:::ai
-        D -->|Raw String| E{OpenAI GPT-4}:::ai
-        E -->|JSON Object| F[Data: Vendor, Amount, Date]:::ai
+    subgraph Phase_2 [Phase 2: AI Extraction]
+        D[PyMuPDF Text Extractor]:::ai
+        E{OpenAI GPT-4}:::ai
+        F[Data: Vendor, Amount, Date]:::ai
+        D -->|Raw String| E
+        E -->|JSON Object| F
     end
 
-    subgraph Phase 3: Brex Integration
-        F --> G[Fuzzy Matching Algorithm]:::brex
-        G <-->|Query| H[(Brex Vendor Directory)]:::brex
-        G -->|Match Found| I[Extract Hidden ACH Details]:::brex
+    subgraph Phase_3 [Phase 3: Brex Integration]
+        G[Fuzzy Matching Algorithm]:::brex
+        H[(Brex Vendor Directory)]:::brex
+        I[Extract Hidden ACH Details]:::brex
+        G <-->|Query| H
+        G -->|Match Found| I
     end
 
-    subgraph Phase 4: Secure Execution
-        I --> J{Idempotency Hash Generator}:::secure
-        J -->|Hash: Invoice + Vendor| K((POST /v1/transfers)):::secure
-        K --> L[Brex Pending Approval Queue]:::brex
-        L -.-> M((Human Approval)):::secure
+    subgraph Phase_4 [Phase 4: Secure Execution]
+        J{Idempotency Hash Generator}:::secure
+        K((POST /v1/transfers)):::secure
+        L[Brex Pending Approval Queue]:::brex
+        M((Human Approval)):::secure
+        J -->|Hash: Invoice + Vendor| K
+        K --> L
+        L -.-> M
     end
 
-    Phase 1 --> Phase 2
-    Phase 2 --> Phase 3
-    Phase 3 --> Phase 4
+    C --> D
+    F --> G
+    I --> J
 ```
 
 ---
