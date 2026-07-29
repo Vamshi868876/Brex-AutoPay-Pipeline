@@ -8,12 +8,13 @@
   <p><i>Developed by <b>Vamshi Batthula</b> (<a href="mailto:batthulavamshi740@gmail.com">batthulavamshi740@gmail.com</a>)</i></p>
 </div>
 
----
+## 📖 About The Project
+The **Brex AutoPay Pipeline** is an elite, fully autonomous Accounts Payable (AP) engine engineered to eradicate manual data entry and enforce zero-defect financial workflows. Designed with the architectural rigor of top-tier fintech platforms (like Ramp and Stripe), this pipeline transforms raw, unstructured invoice data into secure, ledger-ready draft payments with zero human intervention.
 
-## 📖 The Vision
-Processing invoices manually is a relic of the past. The **Brex AutoPay Pipeline** is an enterprise-grade automation architecture designed to eliminate data entry, prevent financial leaks, and integrate seamlessly with modern corporate banking platforms. 
+By harmonizing advanced AI for data extraction with cryptographic duplicate prevention (Idempotency), this project showcases a production-ready, highly secure bridge between standard email protocols and modern corporate banking APIs.
 
-Built to rival the proprietary automation of platforms like **Ramp** and **Bill.com**, this engine monitors AP inboxes, uses AI (GPT-4) to extract unstructured PDF data, performs fuzzy-matching against internal Vendor Directories, and stages secure, idempotent draft payments directly in the Brex banking dashboard.
+### 🌟 Key Technologies & Topics
+`Fintech Architecture` `Accounts Payable Automation` `OpenAI GPT-4` `Brex API Integration` `Idempotency & Cryptography` `Python 3.12` `PyMuPDF` `IMAP Parsing` `Zero-Trust Security` `Process Engineering`
 
 ---
 
