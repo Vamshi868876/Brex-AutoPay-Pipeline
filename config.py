@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Safety Settings
-TEST_MODE = True # Set to False when you want real money to leave your account!
+TEST_MODE = False # Set to False when you want real money to leave your account!
 
 # Brex Constants
 BREX_BASE_URL = "https://platform.brexapis.com"

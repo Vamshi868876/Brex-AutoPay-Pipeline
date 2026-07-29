@@ -1,5 +1,17 @@
+# Environments
 .env
-pdfs/
 __pycache__/
 *.pyc
-.DS_Store
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Data
+pdfs/
+*.pdf
+
+# IDEs
+.vscode/
+.idea/

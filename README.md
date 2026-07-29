@@ -1,86 +1,102 @@
-# Brex Custom AP Automation Pipeline
+# Brex AutoPay Pipeline (Email-to-Paid Engine)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+![Python](https://img.shields.io/badge/python-3.12-blue.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Brex API](https://img.shields.io/badge/API-Brex_v1-orange.svg)
+![OpenAI](https://img.shields.io/badge/AI-OpenAI_GPT4-green.svg)
 
-An enterprise-grade, fully automated Accounts Payable (AP) pipeline designed specifically for **Brex**. 
+## 📌 About The Project
+The **Brex AutoPay Pipeline** is a highly secure, automated Accounts Payable (AP) engine designed to completely eliminate manual invoice entry. It securely monitors a designated AP inbox, intelligently extracts vendor and pricing data from raw PDF attachments using OpenAI, dynamically cross-references internal Brex Vendor Registries, and automatically stages Draft Transfers in the Brex dashboard for final human approval.
 
-Unlike Ramp, Brex's API does not permit developers to access OCR-generated Draft Bills. To bypass this limitation, this architecture implements a **Custom AI Pipeline**. By intercepting vendor invoices via a dedicated Gmail inbox, the Python daemon uses advanced AI (OpenAI GPT-4o / PyMuPDF) to execute its own OCR extraction before pushing a fully approved payment directly to the Brex API.
+This project was built to mimic the automation capabilities of platforms like Ramp, bringing FAANG-level engineering standards to back-office financial operations.
+
+### Topics & Tags
+`Python`, `Automation`, `Brex API`, `Fintech`, `Accounts Payable`, `OpenAI`, `PyMuPDF`, `IMAP`, `Security`, `Idempotency`
 
 ---
 
-## 🏗️ Architectural Flowchart
+## 🏗️ System Architecture
+
+The pipeline follows a strict, one-way data flow to ensure financial security and zero accidental disbursements.
 
 ```mermaid
 graph TD
-    %% Styling
-    classDef external fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef python fill:#4B8BBE,stroke:#306998,stroke-width:2px,color:white;
-    classDef openai fill:#10a37f,stroke:#0d8266,stroke-width:2px,color:white;
-    classDef brex fill:#F26B43,stroke:#d4512c,stroke-width:2px,color:white;
-
-    %% Nodes
-    Vendor([Vendor / Supplier]):::external
-    Gmail[📩 Dedicated AP Gmail Inbox]:::external
-    Daemon{⚙️ Python Daemon<br/>runs every 5 mins}:::python
-    IMAP[📥 email_reader.py<br/>Downloads PDF]:::python
-    OCR[🧠 ocr_parser.py<br/>Extracts Text via PyMuPDF]:::python
-    GPT[🤖 OpenAI GPT-4o<br/>Structured JSON Extraction]:::openai
-    API[💳 brex_api.py<br/>POST /v2/transfers]:::brex
-    BrexPlatform[(Brex Dashboard<br/>Payment Sent!)]:::brex
-
-    %% Flow
-    Vendor -- "Emails Invoice PDF" --> Gmail
-    Gmail -- "IMAP Connection" --> Daemon
-    Daemon --> IMAP
-    IMAP -- "Passes PDF" --> OCR
-    OCR -- "Sends Raw Text" --> GPT
-    GPT -- "Returns Amount, Vendor, ID" --> API
-    API -- "Executes OAuth Push" --> BrexPlatform
+    A[Vendor Sends Invoice] -->|Email| B(AP Gmail Inbox)
+    B -->|IMAP Polling| C{email_reader.py}
+    C -->|Downloads PDF| D[Local /pdfs Directory]
+    D -->|Raw Text| E{ocr_parser.py}
+    E -->|OpenAI GPT-4| F[JSON: Vendor, Amount, Invoice #]
+    
+    F --> G{brex_api.py}
+    G -->|Fuzzy Match| H[(Brex Vendor Directory)]
+    H -->|Extract| I[Payment Instrument ID]
+    
+    I --> J{Idempotency Hash Generator}
+    J -->|POST /v1/transfers| K((Brex API))
+    
+    K -->|Stages Payment| L[Pending Approval Queue]
+    L -->|Human-in-the-Loop| M(Boss Clicks Approve)
+    M -->|Disbursement| N[Funds Sent via ACH]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style N fill:#bbf,stroke:#333,stroke-width:4px
+    style L fill:#fca,stroke:#333,stroke-width:2px
 ```
 
 ---
 
-## 🚀 Features
-* **Bypasses Brex Limitations**: Custom OCR engine eliminates the need for Brex's hidden drafts.
-* **100% Automated**: Runs as a background daemon polling every 5 minutes.
-* **Safe Testing Mode**: Built-in `TEST_MODE` to simulate the pipeline and view AI extraction results without moving real money.
-* **Smart Inbox Management**: Only processes the 5 most recent unread emails to prevent memory hangs on large inboxes.
+## 🔒 Security & Duplicate Prevention (Idempotency)
 
-## 🛠️ Installation & Setup
+One of the biggest risks in financial automation is the accidental processing of duplicate invoices. This pipeline implements enterprise-grade duplicate protection mirroring systems built by Ramp.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Vamshi868876/brex-payment-automation-.git
-   cd brex-payment-automation-
-   ```
+### How it Works:
+Instead of sending a random UUID to Brex for every API request, the `create_vendor_payment` function generates a unique cryptographic hash using the **Invoice Number** and the **Vendor Name**:
 
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+```python
+invoice_string = f"Invoice {invoice_number} from {vendor_name}"
+idemp_key = hashlib.md5(invoice_string.encode('utf-8')).hexdigest()
+headers["Idempotency-Key"] = idemp_key
+```
 
-3. **Configure Environment:**
-   Create a `.env` file in the root directory and populate it with your credentials:
-   ```env
-   # Brex API Credentials
-   BREX_USER_TOKEN=your_brex_user_token_here
-   
-   # Gmail IMAP Credentials
-   EMAIL_ACCOUNT=your_email@gmail.com
-   EMAIL_PASSWORD=your_gmail_16_letter_app_password
-   
-   # OpenAI API Key (For Custom OCR)
-   OPENAI_API_KEY=sk-your-openai-key
-   ```
+When this key is passed to the Brex API (`/v1/transfers`), Brex checks its internal ledger. If the script accidentally loops over the same email, or a vendor sends the exact same invoice twice, the hashes will match perfectly. **Brex will instantly block and ignore the duplicate request.** This guarantees that no matter how many times the script is run, only **one** Draft Bill will ever be created per invoice.
 
-4. **Run the Daemon:**
-   ```bash
-   python main.py
-   ```
+---
 
-## 🔒 Security Note (Test Mode)
-By default, this repository is configured with `TEST_MODE = True` in `config.py`. This ensures that while you are testing the AI and Email integrations, **no real money will be transferred via Brex**. Once you have verified the AI is extracting vendor names and amounts accurately, switch it to `False` to enable live payments.
+## 🚀 Setup & Installation
 
-## 👨‍💻 Author
-Built by **Vamshi Batthula**.
+### 1. Prerequisites
+- Python 3.10+
+- A Brex Account with Admin privileges
+- A Gmail Account with App Passwords enabled
+- An OpenAI API Key
+
+### 2. Environment Variables
+Create a `.env` file in the root directory and add the following keys. **(Never commit this file!)**
+
+```env
+# Brex Settings
+BREX_USER_TOKEN=your_secure_brex_token_here
+
+# Gmail Settings
+EMAIL_ACCOUNT=your_ap_inbox@gmail.com
+EMAIL_PASSWORD=your_gmail_app_password
+
+# AI Settings
+OPENAI_API_KEY=your_openai_api_key
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Pipeline
+```bash
+python main.py
+```
+The script will output `SUCCESS! Brex Payment ID: dptx_...` and the transfer will be safely waiting in your Brex Pending Approvals queue.
+
+---
+
+## 🤝 Human-in-the-Loop Guarantee
+This automation operates entirely as a "Drafting" agent. It utilizes the `/v1/transfers` API combined with your company's internal approval policies. This means that while the bot does 100% of the data entry and routing, **0 funds will ever leave the originating checking account without explicit, manual approval from an authorized manager inside the Brex dashboard.**

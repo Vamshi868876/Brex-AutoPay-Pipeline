@@ -27,12 +27,36 @@ def run_pipeline():
             
         print(f"Extracted Data: {invoice_data}")
         
-        # 3. Push to Brex API
+        # 3. Lookup Vendor ID dynamically
+        vendor_name = invoice_data.get("vendor_name", "")
+        print(f"Looking up Brex Vendor ID for '{vendor_name}'...")
+        vendor_id = brex.get_vendor_id_by_name(vendor_name)
+        
+        if not vendor_id:
+            print(f"Vendor '{vendor_name}' not found in Brex. Skipping payment. Please add them to Brex first!")
+            continue
+            
+        print(f"Found Vendor ID: {vendor_id}")
+        
+        # 4. Push to Brex API (Using the strict v1/transfers schema)
+        # Note: Brex requires amounts in cents, and requires specific IDs for vendors and funding accounts.
+        amount_in_cents = int(float(invoice_data.get("amount", 0)) * 100)
+        
         payload = {
-            "vendor_name": invoice_data.get("vendor_name"),
-            "amount": invoice_data.get("amount"),
-            "invoice_number": invoice_data.get("invoice_number"),
-            "description": f"Invoice {invoice_data.get('invoice_number')}"
+            "amount": {
+                "amount": amount_in_cents,
+                "currency": "USD"
+            },
+            "counterparty": {
+                "type": "VENDOR",
+                "payment_instrument_id": vendor_id # Dynamically fetched!
+            },
+            "description": f"Invoice {invoice_data.get('invoice_number')}",
+            "external_memo": f"Invoice {invoice_data.get('invoice_number')} from {invoice_data.get('vendor_name')}",
+            "originating_account": {
+                "type": "BREX_CASH",
+                "id": "dpacc_cklicxj7n019l01khl9zqxq6x" # Your Primary Checking Account ID
+            }
         }
         
         print("Pushing to Brex...")
