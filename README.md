@@ -1,117 +1,115 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Brex-000000?style=for-the-badge&logo=brex&logoColor=white" alt="Brex">
-  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/LangGraph-000000?style=for-the-badge&logo=langchain&logoColor=white" alt="LangGraph">
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/PGVector-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PGVector">
+  <img src="https://img.shields.io/badge/OpenAI_GPT--4-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI">
   <br>
-  <h1>🚀 Brex AutoPay Pipeline (Email-to-Paid Engine)</h1>
-  <p><b>An Autonomous, AI-Driven Financial Pipeline for Zero-Touch Invoice Processing</b></p>
-  <p><i>Developed by <b>Vamshi Batthula</b> (<a href="mailto:batthulavamshi740@gmail.com">batthulavamshi740@gmail.com</a>)</i></p>
+  <h1>🚀 Enterprise Multi-Agent Accounts Payable Brain</h1>
+  <p><b>A FAANG-Grade, RAG-Enabled, Multi-Agent AI Pipeline for Autonomous Invoice Processing & Fraud Detection</b></p>
+  <p><i>Architected by <b>Vamshi Batthula</b> (<a href="mailto:batthulavamshi740@gmail.com">batthulavamshi740@gmail.com</a>)</i></p>
 </div>
-
-## 📖 About The Project
-The **Brex AutoPay Pipeline** is an elite, fully autonomous Accounts Payable (AP) engine engineered to eradicate manual data entry and enforce zero-defect financial workflows. Designed with the architectural rigor of top-tier fintech platforms (like Ramp and Stripe), this pipeline transforms raw, unstructured invoice data into secure, ledger-ready draft payments with zero human intervention.
-
-By harmonizing advanced AI for data extraction with cryptographic duplicate prevention (Idempotency), this project showcases a production-ready, highly secure bridge between standard email protocols and modern corporate banking APIs.
-
-### 🌟 Key Technologies & Topics
-`Fintech Architecture` `Accounts Payable Automation` `OpenAI GPT-4` `Brex API Integration` `Idempotency & Cryptography` `Python 3.12` `PyMuPDF` `IMAP Parsing` `Zero-Trust Security` `Process Engineering`
 
 ---
 
-## 🧠 System Architecture & Workflow
+## 📖 The Vision
+Processing invoices manually is a relic of the past. The **Enterprise Multi-Agent AP Brain** is a highly complex, autonomous financial architecture designed to replace entire back-office accounting teams with deterministic, compliance-driven AI Agents.
 
-The architecture is designed with strict boundaries between data extraction and financial disbursement. The system acts strictly as an intelligent "drafter", ensuring funds never leave the account without final human authorization.
+This is not a simple OCR script. By orchestrating a **LangGraph Multi-Agent Ecosystem**, deploying **PGVector** for semantic duplicate detection, and leveraging **RAG (Retrieval-Augmented Generation)** for policy compliance, this engine achieves zero-touch, zero-defect financial workflows. Built to rival proprietary enterprise software (like Ramp and Bill.com), this system predicts fraud, enforces company policy, and stages secure draft payments directly via the Brex API.
+
+### 🌟 Enterprise Tech Stack
+`Python` `FastAPI` `LangChain` `LangGraph` `Multi-Agent AI` `RAG` `PGVector` `PostgreSQL` `Vector Search` `OpenAI GPT-4` `Generative AI` `Prompt Engineering` `Intelligent Document Processing (IDP)` `OCR` `Brex API` `REST APIs` `Redis` `Docker` `Machine Learning`
+
+---
+
+## 🧠 The Multi-Agent Workflow (LangGraph)
+
+The architecture replaces linear logic with a swarm of specialized AI Agents. Each agent is responsible for a distinct micro-task, passing context down the pipeline for a final deterministic decision.
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'primaryBorderColor': '#333333', 'lineColor': '#F2613F', 'fontFamily': 'Inter, sans-serif'}}}%%
 flowchart TD
-    %% Define Node Styles
-    classDef email fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px,color:#1A237E
-    classDef ai fill:#E0F7FA,stroke:#00BCD4,stroke-width:2px,color:#006064
-    classDef brex fill:#FBE9E7,stroke:#FF5722,stroke-width:2px,color:#BF360C
-    classDef secure fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px,color:#1B5E20
+    %% Node Styles
+    classDef input fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px,color:#1A237E
+    classDef agent fill:#E0F7FA,stroke:#00BCD4,stroke-width:2px,color:#006064
+    classDef rag fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#E65100
+    classDef output fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px,color:#1B5E20
     
-    subgraph Phase_1 [Phase 1: Ingestion]
-        A([📧 Vendors Email Invoice]):::email --> B{IMAP Listener}:::email
-        B -->|Downloads| C[(Raw PDFs)]:::email
+    A([📧 Raw Invoice PDF]):::input --> B[🕵️ Agent 1: Document Intelligence]:::agent
+    B -->|Structured JSON| C[🏢 Agent 2: Vendor Validation]:::agent
+    C --> D[🚨 Agent 3: Fraud Detection]:::agent
+    
+    subgraph Vector Database
+        DB[(PGVector: Policies & Contracts)]:::rag
     end
-
-    subgraph Phase_2 [Phase 2: AI Extraction]
-        D[PyMuPDF Text Extractor]:::ai
-        E{OpenAI GPT-4}:::ai
-        F[Data: Vendor, Amount, Date]:::ai
-        D -->|Raw String| E
-        E -->|JSON Object| F
-    end
-
-    subgraph Phase_3 [Phase 3: Brex Integration]
-        G[Fuzzy Matching Algorithm]:::brex
-        H[(Brex Vendor Directory)]:::brex
-        I[Extract Hidden ACH Details]:::brex
-        G <-->|Query| H
-        G -->|Match Found| I
-    end
-
-    subgraph Phase_4 [Phase 4: Secure Execution]
-        J{Idempotency Hash Generator}:::secure
-        K((POST /v1/transfers)):::secure
-        L[Brex Pending Approval Queue]:::brex
-        M((Human Approval)):::secure
-        J -->|Hash: Invoice + Vendor| K
-        K --> L
-        L -.-> M
-    end
-
-    C --> D
-    F --> G
-    I --> J
+    
+    D --> E[⚖️ Agent 4: Policy Compliance RAG]:::agent
+    DB -.->|Context Retrieval| E
+    
+    E --> F[📊 Agent 5: Approval Recommendation]:::agent
+    F -->|Draft Payload| G((POST /v1/transfers)):::output
+    G --> H[Human Supervisor Dashboard]:::output
 ```
 
 ---
 
-## 🛡️ Enterprise Security: Idempotency & Duplicate Prevention
+## 🔥 Core Enterprise AI Features
 
-One of the most dangerous risks in AP automation is paying the same invoice twice. This engine solves this completely using **Cryptographic Idempotency**.
+### 1. Advanced AI Invoice Understanding (IDP)
+Instead of extracting simple JSON strings, the **Document Intelligence Agent** maps unstructured PDFs to strict semantic schemas:
+- **Vendor:** Microsoft Azure
+- **Tax / GST / VAT:** 18%
+- **Category & Expense Type:** Cloud Infrastructure (Opex)
+- **Cost Center:** Engineering Dept
+- **Risk Score & Confidence:** 99.8%
+- **Missing Fields:** None Detected
 
-Instead of sending generic requests, the pipeline generates a unique MD5 Hash signature for every single invoice based on its Invoice Number and Vendor Name. 
+### 2. AI Fraud Detection & Verification
+The **Fraud Detection Agent** acts as the ultimate gatekeeper, cross-referencing extracted data against historical baselines to flag:
+- ⚠ Fake Invoices & Shell Companies
+- ⚠ Unregistered or Suspicious Vendors
+- ⚠ Incorrect or Manipulated GST/Tax IDs
+- ⚠ Changed Bank Accounts (Phishing/Intercept attacks)
+- ⚠ Anomalous Invoice Amounts
 
-```python
-invoice_string = f"Invoice {invoice_number} from {vendor_name}"
-idemp_key = hashlib.md5(invoice_string.encode('utf-8')).hexdigest()
+### 3. RAG-Powered Policy Compliance
+Why guess when the LLM can read the rulebook? We embed **Company Policies, Vendor Contracts, Payment Rules, Tax Rules, and Previous Invoices** into a **PGVector** database. 
+When an invoice arrives, the **Policy Compliance Agent** queries the vector store: *"Should this invoice for $50k software licenses be approved?"* The LLM answers deterministically using retrieved context.
+
+### 4. Semantic Duplicate Detection (Vector Search)
+Standard MD5 hashes fail if an invoice number changes by one letter. We implement **Semantic Duplicate Detection** using embeddings. By converting the invoice's true *meaning* into a vector, PGVector can detect duplicates even if the vendor slightly alters the invoice number or formatting. 
+
+### 5. Enterprise Approval Summaries
+Instead of a simple "Approved" Boolean, the **Recommendation Agent** generates a comprehensive, executive-level summary for the human supervisor:
+```json
+{
+  "Vendor": "Microsoft",
+  "Amount": "₹1,20,000",
+  "Policy": "Compliant (Within Q3 Cloud Budget)",
+  "Fraud Risk": "Low",
+  "Duplicate Risk": "None (Semantic Match: 0.02%)",
+  "Recommendation": "APPROVE",
+  "Confidence": "98%"
+}
 ```
 
-If the script runs twice on the same email, or if a vendor sends a duplicate PDF, the mathematical hash remains identical. Brex's API instantly recognizes the duplicate Hash and **blocks the second payment from ever being created.** 
+### 6. AI Chat (Chatbot over AP Data)
+Built-in RAG Chat functionality allows executives to query their Accounts Payable data in natural language:
+- *"Why wasn't invoice #423 approved?"*
+- *"Find all Adobe invoices above ₹50,000 this year."*
+
+### 7. Classical Machine Learning (ML)
+Beyond Generative AI, classical ML models analyze historical pipeline data to predict:
+- **Late Payment Probability**
+- **Vendor Risk & Churn**
+- **Approval Time Estimates**
+- **Cash Flow Outlier Forecasting**
 
 ---
 
-## ⚡ Quick Start Guide
+## 🚀 Future Roadmap & Execution
+This repository is currently transitioning from its highly-successful `v1.0` script (which achieved perfect end-to-end Brex integration) into this `v2.0` Multi-Agent Architecture. 
 
-### 1. Requirements
-- Python 3.10+
-- A Brex Account (with `Account Admin` privileges for the API Token)
-- An AP Gmail Account (with an App Password)
-- OpenAI API Key
-
-### 2. Secure Configuration
-Clone the repository and create a `.env` file at the root. **This file is automatically protected by `.gitignore`**.
-
-```env
-BREX_USER_TOKEN=your_brex_token (Requires full Read/Write for Vendors & Transfers)
-EMAIL_ACCOUNT=ap@yourcompany.com
-EMAIL_PASSWORD=your_gmail_app_password
-OPENAI_API_KEY=sk-your-openai-key
-```
-
-### 3. Execution
-```bash
-pip install -r requirements.txt
-python main.py
-```
-
-### 4. Observe the Magic
-The terminal will output the live extraction and matching process, ending with a success payload. Log into your Brex Dashboard and check the **Tasks / Approvals** tab to view your perfectly drafted, ready-to-approve payments!
-
----
-<div align="center">
-  <i>Engineered for precision. Built for scale.</i>
-</div>
+**Next Implementation Steps:**
+1. Stand up FastAPI Backend & Dockerize the environment.
+2. Spin up PGVector database for semantic embeddings.
+3. Replace linear OCR with LangGraph Agent pipelines.
