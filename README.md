@@ -35,12 +35,12 @@ flowchart TD
     classDef rag fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#E65100
     classDef brex fill:#FBE9E7,stroke:#FF5722,stroke-width:2px,color:#BF360C
     
-    subgraph Phase_1 [Phase 1: Ingestion]
+    subgraph Phase_1 ["Phase 1: Ingestion"]
         A([📧 Vendors Email Invoice]):::ingestion --> B{IMAP Listener}:::ingestion
         B --> C[(Raw PDFs)]:::ingestion
     end
 
-    subgraph Phase_2 [Phase 2: Multi-Agent AI (LangGraph)]
+    subgraph Phase_2 ["Phase 2: Multi-Agent AI (LangGraph)"]
         D[📄 Document Intelligence Agent]:::agent
         E[🏢 Vendor Intelligence Agent]:::agent
         F[🚨 Fraud Detection Agent]:::agent
@@ -55,7 +55,7 @@ flowchart TD
         G --> H
     end
 
-    subgraph Phase_3 [Phase 3: Secure Execution]
+    subgraph Phase_3 ["Phase 3: Secure Execution"]
         J{Semantic Duplicate Detection}:::rag
         K((Brex /v1/transfers)):::brex
         L[Brex Pending Approval Queue]:::brex
